@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>JQ实现瀑布流</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .main {
+            position: relative
+        }
+
+        .box {
+
+            padding: 10px 0 0 10px;
+            float: left;
+        }
+
+        .pic {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 5px #ccc;
+        }
+
+        img {
+            width: 190px;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="main">
+    <div class="box">
+        <div class="pic">
+            <img src="img/0.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/1.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/2.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/3.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/4.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/5.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/6.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/7.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/0.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/8.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/9.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/10.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/11.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/12.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/13.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/14.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/15.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/16.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/17.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/18.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/19.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/20.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/21.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/22.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/23.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/24.jpg"/>
+        </div>
+    </div>
+    <div class="box">
+        <div class="pic">
+            <img src="img/25.jpg"/>
+        </div>
+    </div>
+</div>
+<script src="js/jquery.js"></script>
+<script>
+    $(document).ready(function () {
+        waterfall();
+        var needLoadImg = {'data': [{'src': '1.jpg'}, {'src': '3.jpg'}, {'src': '4.jpg'}, {'src': '5.jpg'}, {'src': '6.jpg'}, {'src': '7.jpg'}]}
+        $(document).on('scroll', function () {
+            if (checkLoadImg()) {
+                $.each(needLoadImg.data, function (index, value) {
+                    var Obox = $("<div></div>");
+                    Obox.addClass('box').appendTo('#main');
+                    var oPic = $("<div></div>");
+                    oPic.addClass('pic').appendTo(Obox);
+                    var Img = $('<img />');
+                    $(Img).attr('src', 'img/' + $(value).attr('src')).appendTo(oPic);
+                })
+            }
+            waterfall();
+        })
+    })
+    function waterfall() {
+        var obox = $('#main>div');
+        var oparent = $('#main');
+        var oboxW = obox.eq(1).width();       //获取每个box的固定宽度
+        var preNum = Math.floor($(window).width() / oboxW);//每一行box的固定个数
+        oparent.css({'margin': '0 auto'}, {'width': 'oboxW*preNum'});
+        var boxH = new Array();
+        obox.each(function (index, value) {
+            if (index < preNum) {
+                boxH[index] = obox.eq(index).outerHeight();
+            }
+            else {
+                var minNum = Math.min.apply(null, boxH);
+                var minIndex = $.inArray(minNum, boxH);
+                $(value).css({'position': 'absolute', 'left': obox.eq(minIndex).position().left, 'top': minNum});
+            }
+            boxH[minIndex] += obox.eq(index).outerHeight();
+        })
+    }
+    function checkLoadImg() {
+        var lastBox = $('#main>div').last();
+        var lastH = Math.floor($(lastBox).outerHeight() / 2 + lastBox.offset().top);  //计算最后一个图片容器一半与到父元素的顶部的距离的和
+        var scrollH = $(window).scrollTop();//需要兼容
+        var windowH = $(window).height();
+        return (lastH < scrollH + windowH) ? true : false;
+    }
+
+</script>
+</body>
+</html>
